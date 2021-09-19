@@ -21,7 +21,6 @@ import modelo.Mensagem;
 import modelo.Usuario;
 
 import dao.DAO;
-import dao.DAOInterface;
 import dao.DAOLog;
 import dao.DAOMensagem;
 import dao.DAOUsuario;
@@ -33,7 +32,6 @@ public class Fachada {
 	private static DAOLog daolog = new DAOLog();  
 
 	private static Usuario usuariologado=null;
-
 
 	public static void inicializar() {
 		DAO.open();
@@ -57,13 +55,7 @@ public class Fachada {
 		return daolog.readAll();	
 	}
 	public static List<Mensagem> buscarMensagens(String termo) throws  Exception{
-		/*
-		 * nao precisa estar logado
-		 * query no banco para obter mensagens do grupo que contenha
-		 *  o termo (considerar case insensitive)
-		 * 
-		 */
-		
+
 		return daomensagem.readByTermo(termo);
 	}
 
@@ -99,7 +91,6 @@ public class Fachada {
 			throw new Exception("login - usuario nao ativo:" + nome);
 		}
 		usuariologado = u;		//altera o logado na fachada
-
 		Log log = new Log(usuariologado.getNome() + " - login");
 		daolog.create(log);
 		DAO.commit();
@@ -118,26 +109,14 @@ public class Fachada {
 	}
 
 	public static Mensagem criarMensagem(String texto) throws Exception{
-		/*
-		 * tem que esta logado
-		 * criar a mensagem, onde o criador é a usuario logada
-		 * adicionar esta mensagem na lista de mensagens de cada usuario do grupo,
-		 * incluindo a do criador
-		 * retornar mensagem criada
-		 */
 
-		//para gerar o novo id da mensagem utilize:
-		//		int id = daomensagem.obterUltimoId();
-		//		id++;
-		//		Mensagem m = new Mensagem(id, usuariologado, texto);
-		
 		if (usuariologado == null) {
 			throw new Exception("É necessário estar logado!");
 		}else {
 			DAO.begin();
 			Mensagem me = new Mensagem(usuariologado, texto);
-			usuariologado.adicionar(me);
 			daomensagem.create(me);
+			usuariologado.adicionar(me);
 			daousuario.update(usuariologado);
 			DAO.commit();
 			return me;
@@ -145,12 +124,15 @@ public class Fachada {
 		
 	}
 
+
+
 	public static List<Mensagem> listarMensagensUsuario() throws Exception{
 		/*
 		 * tem que esta logado
 		 * retorna todas as mensagens do usuario logado
 		 * 
 		 */
+
 		if (usuariologado == null) {
 			throw new Exception("É necessário estar logado!");
 		}else {
@@ -172,7 +154,36 @@ public class Fachada {
 		 * remover cada mensagem da lista de mensagens do usuario logado
 		 * apagar cada mensagem do banco 
 		 */
+		
+		if (usuariologado == null) {
+			throw new Exception("É necessário estar logado!");
+			
+		}else {
+			DAO.begin();
+			Boolean verificar = false;
+			List<Mensagem> mensUsuario = usuariologado.getMensagens();
+			for (int i:ids) {
+				verificar = false;
+				for(Mensagem mens: mensUsuario) {
+					
+						if(mens.getId() == i) {
+							verificar = true;
+							usuariologado.remover(mens);
+							daousuario.update(usuariologado);
+							DAO.commit();
+							System.out.println("Mensagem Excluida");
+						}
+						
+				}
+
+			}
+			if(!verificar) {
+				System.out.println("Mensagem não encontrada!");
+			}
+		}
 	}
+		
+		
 
 	public static void sairDoGrupo() throws  Exception{
 		/*
@@ -181,15 +192,36 @@ public class Fachada {
 		 * criar a mensagem "fulano saiu do grupo"
 		 * desativar o usuario logado e fazer logoff dele
 		 */
+		
+		if (usuariologado == null) {
+			throw new Exception("É necessário estar logado!");
+			
+		}else {
+			DAO.begin();
+			String texto = Fachada.getLogado().getNome() + " Saiu do Grupo";
+			Fachada.criarMensagem(texto);
+			usuariologado.setStatus(false);
+			daousuario.update(usuariologado);
+			DAO.commit();
+			logoff();
+		}	
+		
+		
 	}
 
-	//	public static int totalMensagensUsuario() throws Exception{
-	//		/*
-	//		 * tem que esta logado
-	//		 * retorna total de mensagens criadas pelo usuario logado
-	//		 * 
-	//		 */
-	//	}
+	
+	public static int totalMensagensUsuario() throws Exception{
+
+		
+		if (usuariologado == null) {
+			throw new Exception("É necessário estar logado!");
+			
+		}else {		
+			List<Mensagem> mensUsuario = usuariologado.getMensagens();
+			return mensUsuario.size();
+			}
+		
+	}
 
 	public static void esvaziar() throws Exception{
 		DAO.clear();
@@ -216,7 +248,7 @@ public class Fachada {
 		return ad;
 	}
 
-	public static void solicitarAtivacao(String nome, String senha) throws  Exception{
+	public static void solicitarAtivacao(String nome, String senha, String loginEmail, String senhaEmail) throws  Exception{
 		/*
 		 * o usuario (nome+senha) tem que estar desativado
 		 *  
@@ -224,9 +256,30 @@ public class Fachada {
 		 * usar o método Fachada.enviarEmail(...) 
 		 * 
 		 */
+		
+		DAO.begin();	
+		Usuario u = daousuario.read(nome+"/"+senha);	
+		
+		if(u == null) {
+			DAO.rollback();	
+			throw new Exception("Usuário inexistente!");
+		}
+
+		
+		if (u.getStatus() == true) {
+			DAO.rollback();	
+			throw new Exception("O Usuário precisa estar desativado!");
+		}
+	
+		String assunto = "Permição para entrar no grupo";
+		String mensagem = nome + " solicita ativiação";
+		Fachada.enviarEmail(assunto, mensagem, loginEmail, senhaEmail);
+		
+		
+		
 	}
 
-	public static void solicitarExclusao(String nome, String senha) throws  Exception{
+	public static void solicitarExclusao(String nome, String senha, String loginEmail, String senhaEmail) throws  Exception{
 		/*
 		 * o usuario (nome+senha) tem que estar desativado
 		 *  
@@ -234,6 +287,27 @@ public class Fachada {
 		 * usar o método Fachada.enviarEmail(...) 
 		 * 
 		 */
+		
+		DAO.begin();	
+		Usuario u = daousuario.read(nome+"/"+senha);	
+		
+		if(u == null) {
+			DAO.rollback();	
+			throw new Exception("Usuário inexistente!");
+		}
+
+		
+		if (u.getStatus() == true) {
+			DAO.rollback();	
+			throw new Exception("O Usuário precisa estar desativado!");
+		}
+
+
+		String assunto = "Permição para Exclusão";
+		String mensagem = nome + " solicita Exclusão";
+		Fachada.enviarEmail(assunto, mensagem, loginEmail, senhaEmail);
+		
+		
 	}
 
 	public static void ativarUsuario(String nome) throws  Exception{
@@ -245,6 +319,31 @@ public class Fachada {
 		 * criar a mensagem "nome entrou no grupo"
 		 * 
 		 */
+		
+		DAO.begin();	
+		Usuario u = daousuario.read2(nome);
+		
+		if(!(usuariologado instanceof Administrador)) {
+			DAO.rollback();	
+			throw new Exception("Usuario Logado não possui privilegios!");
+		}
+		
+		if(u == null) {
+			DAO.rollback();	
+			throw new Exception("Usuário inexistente!");
+		}
+
+		if (u.getStatus() == true) {
+			DAO.rollback();	
+			throw new Exception("O Usuário precisa estar desativado!");
+		}else {
+			u.setStatus(true);
+			daousuario.update(u);
+			DAO.commit();
+		}
+		
+
+		
 	}
 
 	public static void apagarUsuario(String nome) throws  Exception{
@@ -255,6 +354,31 @@ public class Fachada {
 		 * apagar as mensagens do usuario e apagar o usuario 
 		 * criar a mensagem "nome foi excluido do sistema"
 		 */
+		
+		DAO.begin();	
+		Usuario u = daousuario.read2(nome);
+		
+		if(!(usuariologado instanceof Administrador)) {
+			DAO.rollback();	
+			throw new Exception("Usuario Logado não possui privilegios!");
+		}
+		
+		if(u == null) {
+			DAO.rollback();	
+			throw new Exception("Usuário inexistente!");
+		}
+
+		if (u.getStatus() == true) {
+			DAO.rollback();	
+			throw new Exception("O Usuário precisa estar desativado!");
+		}else {
+			daousuario.delete(u);
+			DAO.commit();
+		}
+		
+		
+		
+		
 	}
 
 
@@ -268,7 +392,7 @@ public class Fachada {
 	 * 2. ativar opcao "Acesso a App menos seguro" na conta do gmail
 	 * 
 	 **************************************************************/
-	public static void enviarEmail(String assunto, String mensagem) {
+	public static void enviarEmail(String assunto, String mensagem, String login, String senha) {
 		try {
 			/*
 			 * ********************************************************
@@ -280,17 +404,28 @@ public class Fachada {
 			 * ********************************************************
 			 */
 			//configurar emails
-			String emailorigem = "xxxxxxxxxxxxx@gmail.com";
-			String senhaorigem = pegarSenha();
-			String emaildestino = "yyyyyyyyyyyy@gmail.com";
+			String emailorigem = login;
+			String senhaorigem = senha;
+			String emaildestino = "joonnatasfernanndes@gmail.com";
+			
 
 			//Gmail
 			Properties props = new Properties();
-			props.put("mail.smtp.starttls.enable", "true");
-			props.put("mail.smtp.host", "smtp.gmail.com");
-			props.put("mail.smtp.port", "587");
-			props.put("mail.smtp.auth", "true");
+			props.put("mail.smtp.user", emailorigem); 
+	        props.put("mail.smtp.host", "smtp.gmail.com"); 
+	        props.put("mail.smtp.port", "25"); 
+	        props.put("mail.debug", "true"); 
+	        props.put("mail.smtp.auth", "true"); 
+	        props.put("mail.smtp.starttls.enable","true"); 
+	        props.put("mail.smtp.EnableSSL.enable","true");
+	        props.put("mail.smtp.localhost", "192.168.0.16");
+	        
+	        props.setProperty("mail.smtp.socketFactory.class", "javax.net.ssl.SSLSocketFactory");   
+	        props.setProperty("mail.smtp.socketFactory.fallback", "false");   
+	        props.setProperty("mail.smtp.port", "465");   
+	        props.setProperty("mail.smtp.socketFactory.port", "465");
 
+			//Autenticar o login no email
 			Session session;
 			session = Session.getInstance(props,
 					new javax.mail.Authenticator() {
@@ -299,10 +434,13 @@ public class Fachada {
 				}
 			});
 
-			MimeMessage message = new MimeMessage(session);
-			message.setSubject(assunto);		
+			//session.setDebug(true);
+			
+			//Prepara a mensagem para enviar
+			MimeMessage message = new MimeMessage(session);		
 			message.setFrom(new InternetAddress(emailorigem));
 			message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(emaildestino));
+			message.setSubject(assunto);
 			message.setText(mensagem);   // usar "\n" para quebrar linhas
 			Transport.send(message);
 
@@ -316,7 +454,7 @@ public class Fachada {
 	/*
 	 * JANELA PARA DIGITAR A SENHA DO EMAIL
 	 */
-	public static String pegarSenha(){
+	/*public static String pegarSenha(){
 		JPasswordField field = new JPasswordField(10);
 		field.setEchoChar('*'); 
 		JPanel painel = new JPanel();
@@ -325,6 +463,6 @@ public class Fachada {
 		JOptionPane.showMessageDialog(null, painel, "Senha", JOptionPane.PLAIN_MESSAGE);
 		String texto = new String(field.getPassword());
 		return texto.trim();
-	}
+	}*/
 }
 

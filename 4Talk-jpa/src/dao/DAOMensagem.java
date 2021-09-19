@@ -16,7 +16,7 @@ public class DAOMensagem extends DAO<Mensagem>{
 		try {
 			Integer me = (Integer) chave;
 			TypedQuery<Mensagem> q = manager.createQuery
-					("select m from Mensagem m where m.id=:i", Mensagem.class);
+					("select m from mensagem_20182370045 m where m.id=:i", Mensagem.class);
 			q.setParameter("i", me);
 			return q.getSingleResult();
 		}catch(NoResultException e) {
@@ -27,14 +27,14 @@ public class DAOMensagem extends DAO<Mensagem>{
 	
 	public List<Mensagem> readAll(){
 		TypedQuery<Mensagem> q = manager.createQuery
-				("select m from Mensagem m orde by m.id", Mensagem.class);
+				("select m from mensagem_20182370045 m", Mensagem.class);
 		return q.getResultList();
 	}
 
 	
 	public List<Mensagem> readByTermo(String termo){
 		TypedQuery<Mensagem> q = manager.createQuery
-				("select m from Mensagem m where m.texto like '%"+ termo +"%' order by m.id", Mensagem.class);
+				("select m from mensagem_20182370045 m where m.texto like '%"+ termo +"%' order by m.id", Mensagem.class);
 		return q.getResultList();
 	}
 	

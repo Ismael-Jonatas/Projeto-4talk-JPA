@@ -163,10 +163,67 @@ public class TelaUsuario {
 		button_1 = new JButton("Apagar");
 		button_1.setBounds(178, 225, 74, 23);
 		frame.getContentPane().add(button_1);
+		button_1.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				try {
+					DefaultTableModel model = (DefaultTableModel) table.getModel();
+					if (table.getSelectedRow() < 0)
+						JOptionPane.showMessageDialog(null, "selecione uma linha");
+					else {
+						//pegar o id na linha selecionada
+						String nome = (String) table.getValueAt( table.getSelectedRow(), 0); //0=nome
 
+						Object[] options = { "Confirmar", "Cancelar" };
+						int escolha = JOptionPane.showOptionDialog(null, "Esta operação apagara o usuário", "Alerta",
+								JOptionPane.DEFAULT_OPTION, 
+								JOptionPane.WARNING_MESSAGE, null, options, options[1]);
+						if(escolha == 0) {
+							Fachada.apagarUsuario(nome);
+							label.setText("Exclusão realizada"); 
+						}
+						else
+							label.setText("Exclusão cancelada"); 
+					}
+				}
+				catch(Exception ex) {
+					label.setText(ex.getMessage());
+				}
+
+			}
+		});
+		
+		
 		button_2 = new JButton("Ativar");
 		button_2.setBounds(256, 225, 74, 23);
 		frame.getContentPane().add(button_2);
+		button_2.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				try {
+					DefaultTableModel model = (DefaultTableModel) table.getModel();
+					if (table.getSelectedRow() < 0)
+						JOptionPane.showMessageDialog(null, "selecione uma linha");
+					else {
+						//pegar o id na linha selecionada
+						String nome = (String) table.getValueAt( table.getSelectedRow(), 0); //0=nome
+
+						Object[] options = { "Confirmar", "Cancelar" };
+						int escolha = JOptionPane.showOptionDialog(null, "Esta operação ativará o usuário", "Alerta",
+								JOptionPane.DEFAULT_OPTION, 
+								JOptionPane.WARNING_MESSAGE, null, options, options[1]);
+						if(escolha == 0) {
+							Fachada.ativarUsuario(nome);
+							label.setText("Ativação realizada"); 
+						}
+						else
+							label.setText("Ativação cancelada"); 
+					}
+				}
+				catch(Exception ex) {
+					label.setText(ex.getMessage());
+				}
+
+			}
+		});
 
 		timer = new Timer(0, new ActionListener() {
 			@Override

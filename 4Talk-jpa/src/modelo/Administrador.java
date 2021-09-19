@@ -1,9 +1,27 @@
 
 package modelo;
 
+
+import javax.persistence.InheritanceType;
+import javax.persistence.Table;
+import javax.persistence.Cacheable;
+import javax.persistence.Entity;
+import javax.persistence.Inheritance;
+import javax.persistence.UniqueConstraint;
+
+
+@Table(uniqueConstraints=@UniqueConstraint(columnNames={"nomesenha", "email"}))
+
+@Entity(name="administrador_20182370045")
+@Cacheable(false) 
+@Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
+
 public class Administrador extends Usuario {
+	
 	private String email;			
 
+	public Administrador(){}
+	
 	public Administrador(String nomesenha, String email) {
 		super(nomesenha);
 		this.email = email;
@@ -29,6 +47,6 @@ public class Administrador extends Usuario {
 				texto += "\n  --> " + m ;
 
 		return texto ;
-
 	}
+
 }

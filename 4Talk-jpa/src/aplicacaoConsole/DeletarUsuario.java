@@ -15,18 +15,6 @@ public class DeletarUsuario {
 
 	public DeletarUsuario(){
 		Fachada.inicializar();
-		try {
-			String nome = JOptionPane.showInputDialog("digite o nome");
-			String senha = JOptionPane.showInputDialog(null,"digite a senha","123");
-			String id = JOptionPane.showInputDialog("digite o id da mensagem");
-			Fachada.login(nome, senha);
-			System.out.println("Usuario logado:"+ Fachada.getLogado().getNome());
-			Fachada.sairDoGrupo();
-		} 
-		catch (Exception e) {
-			System.out.println(e.getMessage());
-		}
-		
 		//apagar usuario
 		try {
 			String nome = JOptionPane.showInputDialog("digite o nome");

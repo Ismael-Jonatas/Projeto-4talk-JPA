@@ -39,6 +39,7 @@ public class TelaPrincipal {
 	private JMenuItem mntmSairGrupo;
 	private JMenuItem mntmEntrarGrupo;
 	private JMenuItem mntmApagarUsuario;
+	private JMenuItem mntmAtivarUsuario;
 	private JMenu mnMensagem;
 	private JMenu mnLogar;
 	private JMenuItem mntmLogin;
@@ -85,7 +86,7 @@ public class TelaPrincipal {
 				Fachada.inicializar();
 				
 				try {
-					Administrador ad = Fachada.criarAdministrador("admin", "123", "seuemail@gmail.com");
+					Administrador ad = Fachada.criarAdministrador("admin", "123", "joonnatasfernanndes@gmail.com");
 				}
 				catch(Exception e) {}
 				
@@ -149,13 +150,16 @@ public class TelaPrincipal {
 		});
 		mnUsuario.add(mntmSairGrupo);
 
+		//Solicitar entrada no grupo
 		mntmEntrarGrupo = new JMenuItem("Entrar no grupo");
 		mntmEntrarGrupo.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				try {
 					String nome = pegarNome();
 					String senha = pegarSenha();
-					Fachada.solicitarAtivacao(nome, senha);
+					String loginEmail = pegarLogin();
+					String senhaEmail = pegarSenhaEmail();
+					Fachada.solicitarAtivacao(nome, senha, loginEmail, senhaEmail );
 					JOptionPane.showMessageDialog(frame, "solicitação enviada ao administrador");
 				}
 				catch(Exception ex) {
@@ -165,13 +169,16 @@ public class TelaPrincipal {
 		});
 		mnUsuario.add(mntmEntrarGrupo);
 
+		//Solicitar exclusão 
 		mntmApagarUsuario = new JMenuItem("Apagar");
 		mntmApagarUsuario.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				try {
 					String nome = pegarNome();
 					String senha = pegarSenha();
-					Fachada.solicitarExclusao(nome, senha);
+					String loginEmail = pegarLogin();
+					String senhaEmail = pegarSenhaEmail();
+					Fachada.solicitarExclusao(nome, senha, loginEmail, senhaEmail);
 					JOptionPane.showMessageDialog(frame, "solicitação enviada ao administrador");
 				}
 				catch(Exception ex) {
@@ -180,7 +187,6 @@ public class TelaPrincipal {
 			}
 		});
 		mnUsuario.add(mntmApagarUsuario);
-
 
 		//-----------------------------------------------------------------
 
@@ -245,4 +251,26 @@ public class TelaPrincipal {
 		String texto = new String(field.getPassword());
 		return texto.trim();
 	}
+	
+	public static String pegarLogin(){
+		JTextField textField = new JTextField(10);
+		JPanel painel = new JPanel();
+		painel.add(new JLabel("Insira seu Login:"));
+		painel.add(textField);
+		JOptionPane.showMessageDialog(null, painel, "Login-Email", JOptionPane.PLAIN_MESSAGE);
+		String texto = textField.getText();
+		return texto.trim() ;
+	}
+	
+	public static String pegarSenhaEmail(){
+		JPasswordField field = new JPasswordField(10);
+		field.setEchoChar('*'); 
+		JPanel painel = new JPanel();
+		painel.add(new JLabel("Insira sua senha do email:"));
+		painel.add(field);
+		JOptionPane.showMessageDialog(null, painel, "Senha-Email", JOptionPane.PLAIN_MESSAGE);
+		String texto = new String(field.getPassword());
+		return texto.trim();
+	}
+	
 }

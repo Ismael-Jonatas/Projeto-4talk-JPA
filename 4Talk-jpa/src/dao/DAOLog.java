@@ -1,6 +1,7 @@
 package dao;
 
 import modelo.Log;
+import modelo.Mensagem;
 
 import java.util.List;
 
@@ -15,5 +16,12 @@ public class DAOLog extends DAO<Log> {
 		// TODO Auto-generated method stub
 		return null;
 	}
+	
+	public List<Log> readAll(){
+		TypedQuery<Log> q = manager.createQuery
+				("select l from log_20182370045 l", Log.class);
+		return q.getResultList();
+	}
+
 
 }

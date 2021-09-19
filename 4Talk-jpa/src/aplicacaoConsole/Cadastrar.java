@@ -48,7 +48,7 @@ public class Cadastrar {
 		} catch (Exception e) 	{
 			System.out.println(e.getMessage());
 		}
-
+			
 	
 
 		Fachada.finalizar();

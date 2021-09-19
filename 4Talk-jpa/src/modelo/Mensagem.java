@@ -1,33 +1,37 @@
 
 package modelo;
 
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.function.Predicate;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.ElementCollection;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
+
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.Lob;
-import javax.persistence.ManyToMany;
-import javax.persistence.OneToMany;
+import javax.persistence.Index;
+import javax.persistence.GenerationType;
+import javax.persistence.ManyToOne;
+import javax.persistence.PrePersist;
+import javax.persistence.Table;
+import javax.persistence.Cacheable;
+import javax.persistence.Column;
 
-@Entity
+
+@Table(indexes={@Index(name="indice1", columnList="criador, datahora")})
+
+@Entity (name = "mensagem_20182370045")
+@Cacheable(false) 
+
 public class Mensagem {
 	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
     private int id;
-    private String datahora;
+	@Column(name =  "datahora", columnDefinition = "TIMESTAMP")
+    private Date datahora; //formato "yyyyMMdd HH:mm:ss"
+    @ManyToOne
     private Usuario criador;
-    private String texto;	//formato "yyyyMMdd"
+    private String texto;	
            
     public Mensagem() {
     	
@@ -36,7 +40,6 @@ public class Mensagem {
     public Mensagem(Usuario criador, String texto) {
 		this.criador = criador;
 		this.texto = texto;
-		this.datahora = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd HH:mm:ss"));
 	}
                            
     public int getId() {
@@ -53,14 +56,17 @@ public class Mensagem {
         this.texto = texto;
     }
 
+  
     public String getData() {
-        return datahora;
-    }
-    public void setData(String data) {
-        this.datahora = data;
+    	SimpleDateFormat fmt = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");    
+        return fmt.format(this.datahora);
     }
     
-	
+    @PrePersist
+    void datahora() {
+    	this.datahora = new Date();
+    }
+    
     public Usuario getCriador() {
 		return criador;
 	}
@@ -72,6 +78,6 @@ public class Mensagem {
 	@Override
     public String toString() {
         return  "id=" + id + ", criador=" + criador.getNome() +
-                ", datahora=" + datahora +"\ntexto=" + texto ;
+                ", datahora=" + this.getData() +"\ntexto=" + texto ;
     }   
 }

@@ -1,44 +1,33 @@
 package aplicacaoConsole;
-/**********************************
- * IFPB - Curso Superior de Tec. em Sist. para Internet
- * POB - Persistencia de Objetos
- * Prof. Fausto Ayres
- *
- */
 
 import javax.swing.JOptionPane;
 
 import fachada.Fachada;
-import modelo.Mensagem;
 
-
-public class DeletarMensagem {
-
-	public DeletarMensagem(){
+public class Listar2User {
+	
+	
+	public Listar2User() {
 		Fachada.inicializar();
 		try {
 			String nome = JOptionPane.showInputDialog("digite o nome");
 			String senha = JOptionPane.showInputDialog(null,"digite a senha","123");
-			String id = JOptionPane.showInputDialog("digite o id da mensagem");
 			Fachada.login(nome, senha);
+			System.out.println("Todas Mensagem do usuario \n" + Fachada.getLogado());
+			System.out.println("Total de Mensgens do usuario: " + Fachada.totalMensagensUsuario());
 			System.out.println("Usuario logado:"+ Fachada.getLogado().getNome());
-			int i = Integer.parseInt(id);
-			Fachada.apagarMensagens(i);
 			Fachada.logoff();
-		} 
-		catch (Exception e) {
+		}catch (Exception e) 	{
 			System.out.println(e.getMessage());
 		}
-
+		
 		Fachada.finalizar();
 		System.out.println("fim do programa");
-	}
+	}		
 
-
-
-	//=================================================
 	public static void main(String[] args) {
-		new DeletarMensagem();
+		// TODO Auto-generated method stub
+		new Listar2User();
 	}
-}
 
+}

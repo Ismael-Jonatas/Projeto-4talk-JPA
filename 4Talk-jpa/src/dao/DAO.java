@@ -25,7 +25,6 @@ import javax.persistence.TypedQuery;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-//import daojpa.DAOInterface;
 
 
 public abstract class DAO<T> implements DAOInterface<T> {
@@ -75,6 +74,12 @@ public abstract class DAO<T> implements DAOInterface<T> {
 				prop.setProperty("javax.persistence.jdbc.url", "jdbc:mysql://"+ip+":3306/"+banco+"?createDatabaseIfNotExist=true");
 
 			log.info("url de conexao= "+prop.getProperty("javax.persistence.jdbc.url"));
+			
+			/*****************************************************************************
+			 * 	desativar o cache de objetos para todas as classes
+			 *  cada classe habilitada individualmente com @Cacheable
+			 *****************************************************************************/
+			prop.setProperty("javax.persistence.sharedCache.mode", "DISABLE_SELECTIVE");
 
 			factory = Persistence.createEntityManagerFactory(nomeUnidadePersistencia, prop);
 			manager = factory.createEntityManager();	
@@ -197,18 +202,23 @@ public abstract class DAO<T> implements DAOInterface<T> {
 		begin();
 		log.debug("esvaziando o banco: ");
 
-		q = manager.createQuery("delete from Reuniao");
-		cont =  q.executeUpdate();
-		log.debug("deletou reunioes: "+ cont);
 
-		q = manager.createQuery("delete from Telefone");
+		q = manager.createQuery("delete from Log_20182370045");
 		cont =  q.executeUpdate();
-		log.debug("deletou telefones: "+ cont);
+		log.debug("Os registros de entrada e saida foram apagados: "+ cont);
+		
+		q = manager.createQuery("delete from Mensagem_20182370045");
+		cont =  q.executeUpdate();
+		log.debug("deletou as Mensagens: "+ cont);
 
-		q = manager.createQuery("delete from Pessoa");
+		q = manager.createQuery("delete from Usuario_20182370045");
 		cont =  q.executeUpdate();
-		log.debug("deletou pessoas: "+ cont);
+		log.debug("deletou os Usuarios: "+ cont);
 		log.debug("");
+		
+		q = manager.createQuery("delete from Administrador_20182370045");
+		cont =  q.executeUpdate();
+		log.debug("deletou o ADM: "+ cont);
 
 		commit();
 	}
