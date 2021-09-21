@@ -14,6 +14,7 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
+import javax.swing.JTextField;
 
 import modelo.Administrador;
 import modelo.Log;
@@ -248,7 +249,7 @@ public class Fachada {
 		return ad;
 	}
 
-	public static void solicitarAtivacao(String nome, String senha, String loginEmail, String senhaEmail) throws  Exception{
+	public static void solicitarAtivacao(String nome, String senha) throws  Exception{
 		/*
 		 * o usuario (nome+senha) tem que estar desativado
 		 *  
@@ -273,13 +274,13 @@ public class Fachada {
 	
 		String assunto = "Permição para entrar no grupo";
 		String mensagem = nome + " solicita ativiação";
-		Fachada.enviarEmail(assunto, mensagem, loginEmail, senhaEmail);
+		Fachada.enviarEmail(assunto, mensagem);
 		
 		
 		
 	}
 
-	public static void solicitarExclusao(String nome, String senha, String loginEmail, String senhaEmail) throws  Exception{
+	public static void solicitarExclusao(String nome, String senha) throws  Exception{
 		/*
 		 * o usuario (nome+senha) tem que estar desativado
 		 *  
@@ -305,7 +306,7 @@ public class Fachada {
 
 		String assunto = "Permição para Exclusão";
 		String mensagem = nome + " solicita Exclusão";
-		Fachada.enviarEmail(assunto, mensagem, loginEmail, senhaEmail);
+		Fachada.enviarEmail(assunto, mensagem);
 		
 		
 	}
@@ -392,7 +393,7 @@ public class Fachada {
 	 * 2. ativar opcao "Acesso a App menos seguro" na conta do gmail
 	 * 
 	 **************************************************************/
-	public static void enviarEmail(String assunto, String mensagem, String login, String senha) {
+	public static void enviarEmail(String assunto, String mensagem) {
 		try {
 			/*
 			 * ********************************************************
@@ -404,9 +405,9 @@ public class Fachada {
 			 * ********************************************************
 			 */
 			//configurar emails
-			String emailorigem = login;
-			String senhaorigem = senha;
-			String emaildestino = "joonnatasfernanndes@gmail.com";
+			String emailorigem = emailOrigem();
+			String senhaorigem = pegarSenha();
+			String emaildestino = emailDestino();
 			
 
 			//Gmail
@@ -418,7 +419,8 @@ public class Fachada {
 	        props.put("mail.smtp.auth", "true"); 
 	        props.put("mail.smtp.starttls.enable","true"); 
 	        props.put("mail.smtp.EnableSSL.enable","true");
-	        props.put("mail.smtp.localhost", "192.168.0.16");
+	        props.put("mail.smtp.localhost", "localhost");
+	        //54.94.169.84
 	        
 	        props.setProperty("mail.smtp.socketFactory.class", "javax.net.ssl.SSLSocketFactory");   
 	        props.setProperty("mail.smtp.socketFactory.fallback", "false");   
@@ -454,7 +456,28 @@ public class Fachada {
 	/*
 	 * JANELA PARA DIGITAR A SENHA DO EMAIL
 	 */
-	/*public static String pegarSenha(){
+	
+	public static String emailOrigem(){
+		JTextField textField = new JTextField(10);
+		JPanel painel = new JPanel();
+		painel.add(new JLabel("Insira seu Email:"));
+		painel.add(textField);
+		JOptionPane.showMessageDialog(null, painel, "Login-User", JOptionPane.PLAIN_MESSAGE);
+		String texto = textField.getText();
+		return texto.trim() ;
+	}
+	
+	public static String emailDestino(){
+		JTextField textField = new JTextField(10);
+		JPanel painel = new JPanel();
+		painel.add(new JLabel("Email de Destino:"));
+		painel.add(textField);
+		JOptionPane.showMessageDialog(null, painel, "Email-ADM", JOptionPane.PLAIN_MESSAGE);
+		String texto = textField.getText();
+		return texto.trim() ;
+	}
+	
+	public static String pegarSenha(){
 		JPasswordField field = new JPasswordField(10);
 		field.setEchoChar('*'); 
 		JPanel painel = new JPanel();
@@ -463,6 +486,9 @@ public class Fachada {
 		JOptionPane.showMessageDialog(null, painel, "Senha", JOptionPane.PLAIN_MESSAGE);
 		String texto = new String(field.getPassword());
 		return texto.trim();
-	}*/
+	}
+	
+	
+	
 }
 

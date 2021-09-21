@@ -1,3 +1,3 @@
-19:14:56,087  INFO DAO:58 - processando a unidade de persistencia: eclipselink-postgres
-19:14:56,094  INFO DAO:76 - url de conexao= jdbc:postgresql://localhost:5432/4talk
-19:14:56,176 DEBUG logging:38 - Logging Provider: org.jboss.logging.Log4jLoggerProvider
+21:30:23,206  INFO DAO:58 - processando a unidade de persistencia: eclipselink-postgres
+21:30:23,213  INFO DAO:76 - url de conexao= jdbc:postgresql://localhost:5432/4talk
+21:30:23,297 DEBUG logging:38 - Logging Provider: org.jboss.logging.Log4jLoggerProvider

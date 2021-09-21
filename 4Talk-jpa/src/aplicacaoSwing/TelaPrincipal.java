@@ -39,7 +39,6 @@ public class TelaPrincipal {
 	private JMenuItem mntmSairGrupo;
 	private JMenuItem mntmEntrarGrupo;
 	private JMenuItem mntmApagarUsuario;
-	private JMenuItem mntmAtivarUsuario;
 	private JMenu mnMensagem;
 	private JMenu mnLogar;
 	private JMenuItem mntmLogin;
@@ -157,9 +156,7 @@ public class TelaPrincipal {
 				try {
 					String nome = pegarNome();
 					String senha = pegarSenha();
-					String loginEmail = pegarLogin();
-					String senhaEmail = pegarSenhaEmail();
-					Fachada.solicitarAtivacao(nome, senha, loginEmail, senhaEmail );
+					Fachada.solicitarAtivacao(nome, senha);
 					JOptionPane.showMessageDialog(frame, "solicitação enviada ao administrador");
 				}
 				catch(Exception ex) {
@@ -176,9 +173,7 @@ public class TelaPrincipal {
 				try {
 					String nome = pegarNome();
 					String senha = pegarSenha();
-					String loginEmail = pegarLogin();
-					String senhaEmail = pegarSenhaEmail();
-					Fachada.solicitarExclusao(nome, senha, loginEmail, senhaEmail);
+					Fachada.solicitarExclusao(nome, senha);
 					JOptionPane.showMessageDialog(frame, "solicitação enviada ao administrador");
 				}
 				catch(Exception ex) {
@@ -248,27 +243,6 @@ public class TelaPrincipal {
 		painel.add(new JLabel("Entre com a sua senha:"));
 		painel.add(field);
 		JOptionPane.showMessageDialog(null, painel, "Senha", JOptionPane.PLAIN_MESSAGE);
-		String texto = new String(field.getPassword());
-		return texto.trim();
-	}
-	
-	public static String pegarLogin(){
-		JTextField textField = new JTextField(10);
-		JPanel painel = new JPanel();
-		painel.add(new JLabel("Insira seu Login:"));
-		painel.add(textField);
-		JOptionPane.showMessageDialog(null, painel, "Login-Email", JOptionPane.PLAIN_MESSAGE);
-		String texto = textField.getText();
-		return texto.trim() ;
-	}
-	
-	public static String pegarSenhaEmail(){
-		JPasswordField field = new JPasswordField(10);
-		field.setEchoChar('*'); 
-		JPanel painel = new JPanel();
-		painel.add(new JLabel("Insira sua senha do email:"));
-		painel.add(field);
-		JOptionPane.showMessageDialog(null, painel, "Senha-Email", JOptionPane.PLAIN_MESSAGE);
 		String texto = new String(field.getPassword());
 		return texto.trim();
 	}
