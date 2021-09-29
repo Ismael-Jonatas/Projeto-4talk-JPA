@@ -83,10 +83,17 @@ public class TelaMensagem {
 	private void initialize() {
 		frame = new JFrame();
 		frame.addWindowListener(new WindowAdapter() {
+					
 			@Override
 			public void windowOpened(WindowEvent e) {
 				listagem();
 			}
+			
+			@Override
+			public void windowClosing(WindowEvent e) {
+				timer.stop();
+			}
+			
 		});
 		frame.setTitle("Mensagens");
 		frame.setBounds(100, 100, 776, 411);

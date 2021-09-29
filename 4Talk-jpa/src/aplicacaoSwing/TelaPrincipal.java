@@ -85,7 +85,7 @@ public class TelaPrincipal {
 				Fachada.inicializar();
 				
 				try {
-					Administrador ad = Fachada.criarAdministrador("admin", "123", "joonnatasfernanndes@gmail.com");
+					Administrador ad = Fachada.criarAdministrador("admin", "123", "faustopob@gmail.com");
 				}
 				catch(Exception e) {}
 				

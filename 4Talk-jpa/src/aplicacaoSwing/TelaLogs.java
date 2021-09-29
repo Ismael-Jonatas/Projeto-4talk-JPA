@@ -65,10 +65,18 @@ public class TelaLogs {
 	private void initialize() {
 		frame = new JFrame();
 		frame.addWindowListener(new WindowAdapter() {
+				
 			@Override
 			public void windowOpened(WindowEvent e) {
 				listagem();
 			}
+			
+			@Override
+			public void windowClosing(WindowEvent e) {
+				timer.stop();
+			}
+			
+			
 		});
 		frame.setTitle("Logs");
 		frame.setBounds(100, 100, 443, 323);

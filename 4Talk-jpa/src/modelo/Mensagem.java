@@ -20,7 +20,7 @@ import javax.persistence.Column;
 
 @Table(indexes={@Index(name="indice1", columnList="criador, datahora")})
 
-@Entity (name = "mensagem_20182370045")
+@Entity(name = "mensagem_20182370045")
 @Cacheable(false) 
 
 public class Mensagem {

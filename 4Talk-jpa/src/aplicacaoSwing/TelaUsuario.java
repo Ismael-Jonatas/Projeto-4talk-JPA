@@ -76,6 +76,7 @@ public class TelaUsuario {
 	private void initialize() {
 		frame = new JFrame();
 		frame.addWindowListener(new WindowAdapter() {
+
 			@Override
 			public void windowOpened(WindowEvent e) {
 				if(Fachada.getLogado() instanceof Administrador) {
@@ -92,6 +93,13 @@ public class TelaUsuario {
 				}
 				listagem();
 			}
+			
+			@Override
+			public void windowClosing(WindowEvent e) {
+				timer.stop();
+			}
+			
+			
 		});
 		frame.setTitle("Usu\u00E1rios");
 		frame.setBounds(100, 100, 443, 323);

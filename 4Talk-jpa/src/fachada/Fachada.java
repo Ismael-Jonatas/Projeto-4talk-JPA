@@ -197,6 +197,10 @@ public class Fachada {
 		if (usuariologado == null) {
 			throw new Exception("É necessário estar logado!");
 			
+		}
+		if(usuariologado instanceof Administrador) {
+			DAO.rollback();	
+			throw new Exception("O usuário e um ADM!");
 		}else {
 			DAO.begin();
 			String texto = Fachada.getLogado().getNome() + " Saiu do Grupo";
@@ -337,9 +341,15 @@ public class Fachada {
 		if (u.getStatus() == true) {
 			DAO.rollback();	
 			throw new Exception("O Usuário precisa estar desativado!");
+		}
+		
+		if(u instanceof Administrador) {
+			DAO.rollback();	
+			throw new Exception("O usuário e um ADM!");
 		}else {
 			u.setStatus(true);
 			daousuario.update(u);
+			criarMensagem(nome + " Adicionado");
 			DAO.commit();
 		}
 		
@@ -372,8 +382,15 @@ public class Fachada {
 		if (u.getStatus() == true) {
 			DAO.rollback();	
 			throw new Exception("O Usuário precisa estar desativado!");
+		}
+		
+		if(u instanceof Administrador) {
+			DAO.rollback();	
+			throw new Exception("O usuário e um ADM!");
+			
 		}else {
 			daousuario.delete(u);
+			criarMensagem(nome + " foi excluido");
 			DAO.commit();
 		}
 		
